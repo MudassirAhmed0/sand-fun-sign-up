@@ -1,0 +1,41 @@
+import React from "react";
+
+const InputField = ({
+  big,
+  placeholder,
+  type,
+  value,
+  id,
+  handleChange,
+  errors
+}) => {
+  return (
+    <div
+      className={`${
+        big ? "w-full" : " lg:w-[48%]"
+      } w-full flex flex-col lg:gap-y-[0.3125vw] gap-y-[6px]`}
+    >
+      <label
+        htmlFor="Fullname"
+        className="border-[#ffffff4d] border-b lg:h-[6.66666666667vh] sm:h-[62px] h-[45px] flex items-center justify-between lg:px-[1.25vw] px-[12px]"
+      >
+        <input
+          autoComplete="off"
+          type={type ? type : "text"}
+          placeholder={placeholder}
+          value={value}
+          id={id}
+          onChange={handleChange}
+          className="w-full h-full text-[#FFFFFF] text-opacity-[0.7] lg:text24 mtext18 placeholder:text-[#FFFFFF] placeholder:text-opacity-[0.7] placeholder:lg:text24 placeholder:mtext18 outline-none bg-transparent"
+        />
+      </label>
+      {errors[id] && (
+        <span className="text-red-600  lg:text20 mtext18  error">
+          {errors[id]}
+        </span>
+      )}
+    </div>
+  );
+};
+
+export default InputField;
