@@ -41,7 +41,7 @@ const Footer = ({ arabic }) => {
                 href="/#"
                 className="relative block lg:w-[6.61458333333vw] lg:h-[5.46875vw] w-[110px] sm:h-[77px] h-[80px]"
               >
-                <Image fill src="/images/icons/footer-logo.svg" alt="logo" />
+                <Image fill priority src="/images/icons/footer-logo.svg" alt="logo" />
               </Link>
             </div>
             <div className="relative flex flex-col items-center lg:flex-row lg:items-center">
