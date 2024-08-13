@@ -8,7 +8,7 @@ const InputField = ({
   id,
   handleChange,
   errors,
-  index
+  index,
 }) => {
   return (
     <div
@@ -31,13 +31,22 @@ const InputField = ({
           className="w-full h-full text-[#000] text-opacity-[0.7] lg:text24 mtext18 placeholder:text-[#000] placeholder:text-opacity-[0.7] placeholder:lg:text24 placeholder:mtext18 outline-none bg-transparent"
         />
       </label>
-      {errors[id] && (
+
+      {errors[id] ? (
         <span className="text-red-600  lg:text20 mtext18  error">
           {errors[id]}
         </span>
+      ) : errors.visitors.find((item)=> item[id])?.[id] ? (
+        <span className="text-red-600  lg:text20 mtext18  error">
+          {errors.visitors.find((item)=> item[id])?.[id]}
+        </span>
+      ) : (
+        <></>
       )}
     </div>
   );
 };
+
+
 
 export default InputField;

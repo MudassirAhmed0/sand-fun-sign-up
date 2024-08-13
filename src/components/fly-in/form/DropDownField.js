@@ -70,10 +70,16 @@ const DropDownField = ({
           </ul>
         </div>
       </label>
-      {errors[id] && (
+      {errors[id] ? (
         <span className="text-red-600  lg:text20 mtext18  error">
           {errors[id]}
         </span>
+      ) : errors.visitors.find((item)=> item[id])?.[id] ? (
+        <span className="text-red-600  lg:text20 mtext18  error">
+          {errors.visitors.find((item)=> item[id])?.[id]}
+        </span>
+      ) : (
+        <></>
       )}
     </div>
   );
