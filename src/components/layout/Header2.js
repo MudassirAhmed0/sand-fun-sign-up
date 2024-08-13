@@ -155,7 +155,7 @@ const Header2 = ({ arabic }) => {
               href={"/"}
               className="relative cursor-pointer z-[2] block lg:w-[7.13541666667vw] lg:h-[5.9375vw] w-[37.111%] h-[70px]"
             >
-              <Image fill priority src="/images/icons/logo.svg" alt="logo" />
+              <Image fill src="/images/icons/logo.svg" alt="logo" />
             </Link>
             <nav
               className={`${

@@ -1,20 +1,25 @@
 "use client";
 import InputField from "./form/InputField";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import PhoneDropDownField from "./form/PhoneDropDownField";
 import DropDownField from "./form/DropDownField";
 import FieldAddBtn from "./form/FieldAddBtn";
 import UploadField from "./form/UploadField";
 import CheckBoxField from "./form/CheckBoxField";
-import Image from "next/image";
-import CloseIcon from "./form/CloseIcon";
 
 const SignupForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState("");
+  const [visitors, setVisitors] = useState([]);
 
   const [states, setStates] = useState({
-    visitors: [],
+    firstName: "",
+    lastName: "",
+    nationality: "",
+    passport: "",
+    gender: "",
+    email: "",
+    phone: "",
     pilotlicens: "",
     aircraft: "",
     departureairport: "",
@@ -22,10 +27,16 @@ const SignupForm = () => {
     coaFile: "",
     corFile: "",
     certifiacteFile: "",
-    agreement: false,
+    agreement: false
   });
   const [errors, setErrors] = useState({
-    visitors: [],
+    firstName: "",
+    lastName: "",
+    nationality: "",
+    passport: "",
+    gender: "",
+    email: "",
+    phone: "",
     pilotlicens: "",
     aircraft: "",
     departureairport: "",
@@ -33,7 +44,7 @@ const SignupForm = () => {
     coaFile: "",
     corFile: "",
     certifiacteFile: "",
-    agreement: false,
+    agreement: false
   });
   const [genderValue, setGenderValue] = useState("Gender");
   const phoneRef = useRef(null);
@@ -50,19 +61,15 @@ const SignupForm = () => {
     setStates({ ...states, [event.target.id]: event.target.files[0] });
   };
 
-  const newVisitor = {
-    firstName: "",
-    lastName: "",
-    nationality: "",
-    passport: "",
-    gender: "Gender",
-    email: "",
-    // phone: "",
-  };
-
   const resetForm = () => {
     setStates({
-      visitors: [],
+      firstName: "",
+      lastName: "",
+      nationality: "",
+      passport: "",
+      gender: "",
+      email: "",
+      phone: "",
       pilotlicens: "",
       aircraft: "",
       departureairport: "",
@@ -70,10 +77,16 @@ const SignupForm = () => {
       coaFile: "",
       corFile: "",
       certifiacteFile: "",
-      agreement: false,
+      agreement: false
     });
     setErrors({
-      visitors: [],
+      firstName: "",
+      lastName: "",
+      nationality: "",
+      passport: "",
+      gender: "",
+      email: "",
+      phone: "",
       pilotlicens: "",
       aircraft: "",
       departureairport: "",
@@ -81,7 +94,7 @@ const SignupForm = () => {
       coaFile: "",
       corFile: "",
       certifiacteFile: "",
-      agreement: false,
+      agreement: false
     });
     setGenderValue("Gender");
     phoneRef.current.value = "";
@@ -90,7 +103,6 @@ const SignupForm = () => {
       .forEach(function (checkbox) {
         checkbox.checked = false;
       });
-    handleAddVisitor();
   };
 
   const scroller = (stateKey) => {
@@ -110,7 +122,7 @@ const SignupForm = () => {
             element.getBoundingClientRect().top + window.pageYOffset;
           window.scrollTo({
             top: elementTop - totalOffset,
-            behavior: "smooth",
+            behavior: "smooth"
           });
         }, 300); // Timeout to ensure it runs after scrollIntoView
       }
@@ -121,34 +133,8 @@ const SignupForm = () => {
     e.preventDefault();
     let isError = false;
     Object.keys(states)?.forEach((stateKey) => {
-      if (stateKey === "visitors") {
-        const updatedVisitors = states.visitors.map((visitor) => {
-          const object = {};
-          Object.keys(visitor).map((key) => {
-            if (
-              !key.includes("email") &&
-              (!visitor[key] || visitor[key].length < 1)
-            ) {
-              
-              object[key] = "This Field is Required";
-              scroller(key);
-            } else if (key.includes("email") && !validateEmail(visitor[key])) {
-              
-              object[key] = "Email isn't valid!";
-              scroller(key);
-            } else {
-              object[key] = "";
-            }
-          });
-          return object;
-        });
-        isError = true;
-        setErrors((prev) => ({ ...prev, visitors: updatedVisitors }));
-      } else if (
-        stateKey !== "visitors" &&
-        (!states[stateKey] || states[stateKey]?.length < 1)
-      ) {
-        if (stateKey !== "jobTitle" && stateKey !== "companyName") {
+      if (!states[stateKey] || states[stateKey]?.length < 1) {
+        if (stateKey != "jobTitle" && stateKey != "companyName") {
           if (!isError) {
             // document
             //   .getElementById(stateKey)
@@ -159,9 +145,12 @@ const SignupForm = () => {
 
           setErrors((prev) => ({
             ...prev,
-            [stateKey]: "This Field is Required",
+            [stateKey]: "This Field is Required"
           }));
         }
+      } else if (stateKey == "email" && !validateEmail(states[stateKey])) {
+        setErrors((prev) => ({ ...prev, [stateKey]: "Email isn't valid!" }));
+        isError = true;
       } else {
         setErrors((prev) => ({ ...prev, [stateKey]: "" }));
       }
@@ -177,7 +166,7 @@ const SignupForm = () => {
           email: states?.email,
           company_name: states?.companyName,
           job_title: states?.jobTitle,
-          phone: states?.phone,
+          phone: states?.phone
         },
         "exhibit_2024"
       );
@@ -192,35 +181,10 @@ const SignupForm = () => {
     }
   };
   const handleTextChange = (e) => {
-    if (Object.keys(states).includes(e.target.id)) {
-      setStates((prev) => {
-        return { ...prev, [e.target.id]: e.target.value };
-      });
-    } else {
-      const visitorIndex = e.target.id.includes("1")
-        ? 1
-        : e.target.id.includes("2")
-        ? 2
-        : e.target.id.includes("3")
-        ? 3
-        : 0;
-      const targetedVisitor = states.visitors[visitorIndex];
-      const updatedObject = {
-        ...targetedVisitor,
-        [e.target.id]: e.target.value,
-      };
-
-      setStates((prev) => {
-        return {
-          ...prev,
-          visitors: prev.visitors.map((item, index) =>
-            visitorIndex === index ? updatedObject : item
-          ),
-        };
-      });
-    }
+    setStates((prev) => {
+      return { ...prev, [e.target.id]: e.target.value };
+    });
   };
-
   const handleGender = (value) => {
     setStates({ ...states, gender: value });
   };
@@ -238,37 +202,6 @@ const SignupForm = () => {
     setStates({ ...states, checkboxes: prevChecks });
   };
 
-  const handleAddVisitor = () => {
-    const renamedVisitor = getRenamedVisitor(states.visitors.length);
-    setStates((prev) => {
-      return { ...prev, visitors: [...prev.visitors, renamedVisitor] };
-    });
-    setErrors((prev) => {
-      return { ...prev, visitors: [...prev.visitors, renamedVisitor] };
-    });
-  };
-
-  const handleRemoveVisitor = (index) => {
-    const remainingVisitors = states.visitors.filter((_, i) => i !== index);
-    setStates((prev) => {
-      return { ...prev, visitors: remainingVisitors };
-    });
-  };
-
-  const getRenamedVisitor = (index) => {
-    const renamedVisitor = {};
-    Object.keys(newVisitor).forEach((key) => {
-      renamedVisitor[`${key}-${index}`] = newVisitor[key];
-    });
-    return renamedVisitor;
-  };
-
-  useEffect(() => {
-    if (states.visitors.length === 0) {
-      handleAddVisitor();
-    }
-  }, []);
-
   return (
     <section id="signup">
       <div className="Container1640 py220">
@@ -283,15 +216,66 @@ const SignupForm = () => {
             onSubmit={handleSignupForm}
             className="signup_Form lg:text24 mtext18 text-[#000000] text-opacity-[0.7] flex flex-wrap lg:gap-x-[1.97916666667vw] lg:gap-y-[2.08333333333vw] gap-[24px]"
           >
-            <Visitors
-              visitors={states.visitors}
-              errors={errors}
-              handleTextChange={handleTextChange}
-              handleRemove={handleRemoveVisitor}
-            />
-            {states.visitors.length < 4 && (
-              <FieldAddBtn onClick={handleAddVisitor} />
-            )}
+            <div>
+              <span className="lg:text26 mtext18 text-[#000000] f500 w-full block lg:px-[1.25vw] px-[12px] mb-[10px] lg:mb-[0.6vw] ">
+                Visitor 1
+              </span>
+              <div className="flex flex-wrap lg:gap-x-[0vw] justify-between lg:gap-y-[2.08333333333vw] gap-[24px]">
+                <InputField
+                  id="firstName"
+                  errors={errors}
+                  value={states?.firstName}
+                  placeholder={"Full name *"}
+                  handleChange={handleTextChange}
+                  small
+                />
+                <InputField
+                  id="lastName"
+                  errors={errors}
+                  value={states?.lastName}
+                  placeholder={"Last name *"}
+                  handleChange={handleTextChange}
+                  small
+                />
+                <InputField
+                  id="nationality"
+                  errors={errors}
+                  value={states?.nationality}
+                  placeholder={"Nationality * "}
+                  handleChange={handleTextChange}
+                />
+                <InputField
+                  id="passport"
+                  errors={errors}
+                  value={states?.passport}
+                  placeholder={"Passport number * "}
+                  handleChange={handleTextChange}
+                />
+                <DropDownField
+                  id="gender"
+                  value={states?.gender}
+                  errors={errors}
+                  handleChange={handleGender}
+                  genderValue={genderValue}
+                  setGenderValue={setGenderValue}
+                />
+                <InputField
+                  id="email"
+                  errors={errors}
+                  value={states?.email}
+                  placeholder={"Email * "}
+                  handleChange={handleTextChange}
+                />
+                <PhoneDropDownField
+                  id="phone"
+                  errors={errors}
+                  value={states?.phone}
+                  handlePhoneField={handlePhoneField}
+                  phoneRef={phoneRef}
+                />
+              </div>
+            </div>
+            <FieldAddBtn />
             <InputField
               id="pilotlicens"
               errors={errors}
@@ -369,82 +353,3 @@ const SignupForm = () => {
 };
 
 export default SignupForm;
-
-const Visitors = ({ visitors, errors, handleTextChange, handleRemove }) => {
-  return (
-    <div className="transition duration-300 ease-linear">
-      {visitors?.map((visitor, i) => {
-        return (
-          <div key={i} className={i > 0 ? "mt-10" : ""}>
-            <div className="flex flex-row justify-between items-center">
-              <span className="lg:text26 mtext18 text-[#000000] f500 w-full block lg:px-[1.25vw] px-[12px] mb-[10px] lg:mb-[0.6vw] ">
-                Visitor {i + 1}
-              </span>
-              <span>
-                {i > 0 && (
-                  <button
-                    type="button"
-                    title="Remove"
-                    onClick={() => handleRemove(i)}
-                    className="relative rotate-45 lg:size-[1.45833333333vw] size-[18px]"
-                  >
-                    <CloseIcon />
-                  </button>
-                )}
-              </span>
-            </div>
-            <div className="flex flex-wrap lg:gap-x-[0vw] justify-between lg:gap-y-[2.08333333333vw] gap-[24px]">
-              <InputField
-                id={`firstName-${i}`}
-                errors={errors}
-                placeholder={"Full name *"}
-                handleChange={handleTextChange}
-                small
-              />
-              <InputField
-                id={`lastName-${i}`}
-                errors={errors}
-                placeholder={"Last name *"}
-                handleChange={handleTextChange}
-                small
-              />
-              <InputField
-                id={`nationality-${i}`}
-                errors={errors}
-                placeholder={"Nationality * "}
-                handleChange={handleTextChange}
-              />
-              <InputField
-                id={`passport-${i}`}
-                errors={errors}
-                placeholder={"Passport number * "}
-                handleChange={handleTextChange}
-              />
-              {/* <DropDownField
-                id={`gender-${i}`}
-                value={visitor?.gender}
-                errors={errors}
-                handleChange={handleGender}
-                genderValue={genderValue}
-                setGenderValue={setGenderValue}
-              /> */}
-              <InputField
-                id={`email-${i}`}
-                errors={errors}
-                placeholder={"Email * "}
-                handleChange={handleTextChange}
-              />
-              {/* <PhoneDropDownField
-                id={`phone-${i}`}
-                errors={errors}
-                value={visitor?.phone}
-                handlePhoneField={handlePhoneField}
-                phoneRef={phoneRef}
-              /> */}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};

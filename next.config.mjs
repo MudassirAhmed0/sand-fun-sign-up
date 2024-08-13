@@ -13,8 +13,7 @@ const nextConfig = {
         pathname: "/img/asset/**"
       }
     ]
-  },
-  reactStrictMode: false,
+  }
 };
 
 export default withNextIntl(nextConfig);

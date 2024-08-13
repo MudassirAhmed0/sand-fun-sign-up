@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import postForm from "./postForm";
-
 function scrollToElementById(id, offset) {
   const element = document.getElementById(id);
   setTimeout(() => {
