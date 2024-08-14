@@ -21,7 +21,7 @@ const InputField = ({
         className="border-[#0000004D] border-b lg:h-[6.66666666667vh] sm:h-[62px] h-[45px] flex items-center justify-between lg:px-[1.25vw] px-[12px]"
       >
         <input
-          data-value={index}
+          data-index={index}
           autoComplete="off"
           type={type ? type : "text"}
           placeholder={placeholder}

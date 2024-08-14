@@ -3,14 +3,25 @@ import axiosRequest from "@/lib/axiosRequest";
 const postForm = async (states, endpoint) => {
   try {
     const formData = new FormData();
-    Object.keys(states)?.forEach((stateKey) => {
-      formData.append(stateKey, states[stateKey]);
+
+    // Append simple key-value pairs
+    Object.keys(states).forEach((stateKey) => {
+      // Handle array data for visitors
+      if (Array.isArray(states[stateKey])) {
+        states[stateKey].forEach((visitor, index) => {
+          Object.keys(visitor).forEach((key) => {
+            formData.append(`visitors[${index}][${key}]`, visitor[key]);
+          });
+        });
+      } else {
+        formData.append(stateKey, states[stateKey]);
+      }
     });
+
     let config = {
       method: "post",
       maxBodyLength: Infinity,
       url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/!/forms/${endpoint}`,
-      //   url: `https://barakah.brackets-tech.com/!/forms/career_form`,
       headers: {
         "X-Requested-With": "XMLHttpRequest"
       },

@@ -6,6 +6,8 @@ import DropDownField from "./form/DropDownField";
 import FieldAddBtn from "./form/FieldAddBtn";
 import UploadField from "./form/UploadField";
 import CheckBoxField from "./form/CheckBoxField";
+import Visitor from "./Visitor";
+import postForm from "@/form/postForm";
 
 const SignupForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -103,6 +105,7 @@ const SignupForm = () => {
       .forEach(function (checkbox) {
         checkbox.checked = false;
       });
+    setVisitors([]);
   };
 
   const scroller = (stateKey) => {
@@ -158,17 +161,43 @@ const SignupForm = () => {
 
     if (!isError) {
       setIsLoading(true);
+
+      const vistorsForPost = [
+        {
+          first_name: states.firstName,
+          last_name: states.lastName,
+          nationality: states.nationality,
+          passport_number: states.passport,
+          gender: states.gender.toLocaleLowerCase(),
+          type: "visitors"
+        }
+      ];
+      visitors?.forEach((item) => {
+        vistorsForPost.push({
+          first_name: item.firstName,
+          last_name: item.lastName,
+          nationality: item.nationality,
+          passport_number: item.passport,
+          gender: item.gender.toLocaleLowerCase(),
+          type: "visitors"
+        });
+      });
+
       const res = await postForm(
         {
-          first_name: states?.firstName,
-          last_name: states?.lastName,
-          gender: states?.gender,
+          visitors: vistorsForPost,
           email: states?.email,
-          company_name: states?.companyName,
-          job_title: states?.jobTitle,
-          phone: states?.phone
+          phone: states?.phone,
+          pilot_license: states?.pilotlicens,
+          aircraft: states?.aircraft,
+          departure_airport: states?.departureairport,
+          return_airport: states?.returnairport,
+          coa: states?.coaFile,
+          cor: states?.corFile,
+          insurance_certificate: states?.corFile,
+          accepted_terms_and_conditions: states?.agreement
         },
-        "exhibit_2024"
+        "fly_in_sign_up_form"
       );
       if (res?.status == 200) {
         setStatus("success");
@@ -185,22 +214,81 @@ const SignupForm = () => {
       return { ...prev, [e.target.id]: e.target.value };
     });
   };
+  const handleVisitorTextChange = (e) => {
+    const value = e.target.value;
+    const index = +e.target.dataset.index; // Convert the index to a number
+    const id = e.target.id;
+
+    // Create a copy of the visitors array
+    const prevVisitorStates = [...visitors];
+
+    // Create a copy of the visitor object to avoid mutating state directly
+    prevVisitorStates[index] = { ...prevVisitorStates[index], [id]: value };
+
+    // Update the state with the new visitors array
+    setVisitors(prevVisitorStates);
+  };
   const handleGender = (value) => {
     setStates({ ...states, gender: value });
+  };
+  const handleVisitorGender = (value, index) => {
+    // Create a copy of the visitors array
+    const prevVisitorStates = [...visitors];
+
+    // Create a copy of the visitor object to avoid mutating state directly
+    prevVisitorStates[index] = { ...prevVisitorStates[index], gender: value };
+
+    // Update the state with the new visitors array
+    setVisitors(prevVisitorStates);
   };
   const handlePhoneField = (value) => {
     setStates({ ...states, phone: value });
   };
 
   const handleCheckChange = (e) => {
-    let prevChecks = states?.checkboxes;
-    if (e.target.checked) {
-      prevChecks.push(e.target.value);
-    } else {
-      prevChecks = removeValueFromArray(prevChecks, e.target.value);
-    }
-    setStates({ ...states, checkboxes: prevChecks });
+    console.log(e.target.checked);
+    setStates({ ...states, agreement: e.target.checked });
   };
+  const handleNumberOfVisitors = () => {
+    setVisitors([
+      ...visitors,
+      {
+        firstName: "",
+        lastName: "",
+        nationality: "",
+        passport: "",
+        gender: ""
+      }
+    ]);
+  };
+
+  const handleRemoveVisitor = (index) => {
+    const selectedElement = document.querySelectorAll(".animateVisitor")[index];
+    selectedElement?.classList.remove("animateVisitor");
+    selectedElement?.classList.add("animateReverse");
+
+    setTimeout(() => {
+      setVisitors((prevVisitors) => {
+        const updatedVisitors = prevVisitors.filter((_, i) => i !== index);
+        return updatedVisitors;
+      });
+    }, 700);
+  };
+
+  const renderedVisitors = Array.from(
+    { length: visitors?.length },
+    (_, index) => (
+      <Visitor
+        key={index}
+        index={index}
+        handleTextChange={handleVisitorTextChange}
+        handleGender={handleVisitorGender}
+        states={visitors[index]}
+        errors={errors}
+        handleRemoveVisitor={handleRemoveVisitor}
+      />
+    )
+  );
 
   return (
     <section id="signup">
@@ -275,7 +363,10 @@ const SignupForm = () => {
                 />
               </div>
             </div>
-            <FieldAddBtn />
+            {renderedVisitors}
+            {visitors?.length == 3 || (
+              <FieldAddBtn handleClick={handleNumberOfVisitors} />
+            )}
             <InputField
               id="pilotlicens"
               errors={errors}
@@ -338,6 +429,19 @@ const SignupForm = () => {
               errors={errors}
               handleCheckChange={handleCheckChange}
             />
+
+            {status && (
+              <span
+                className={`  lg:text24 mtext20 w-full block  error ${
+                  status == "success" ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {status == "success"
+                  ? "Your form has been successfully submitted!"
+                  : "Something went wrong try again"}
+              </span>
+            )}
+
             <button
               className={`${
                 isLoading ? "pointer-events-none" : ""

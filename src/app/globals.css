@@ -522,6 +522,34 @@ input[type="number"] {
   display: block;
 }
 
+.animateVisitor {
+  animation: animateHeight 0.5s linear forwards;
+}
+@keyframes animateHeight {
+  from {
+    max-height: 0;
+    overflow: hidden;
+  }
+  to {
+    max-height: 1000px;
+    overflow: visible;
+  }
+}
+
+.animateReverse {
+  animation: reverseAnimateHeight 0.5s linear forwards;
+  overflow: hidden;
+}
+
+@keyframes reverseAnimateHeight {
+  from {
+    max-height: 1000px;
+  }
+  to {
+    max-height: 0;
+  }
+}
+
 /* .Popupanim {
   animation: search-fade 0.6s linear forwards;
 }

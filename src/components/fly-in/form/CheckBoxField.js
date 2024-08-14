@@ -4,7 +4,7 @@ import Image from "next/image";
 const CheckBoxField = ({ errors, id, value, handleCheckChange }) => {
   return (
     <label
-      htmlFor="terms"
+      htmlFor={id}
       className="flex flex-wrap justify-center sm:items-start items-center lg:gap-[0.625vw] gap-[8px] cursor-pointer opacity_Hover termsCheck_Lable w-full"
     >
       <div className="relative lg:min-w-[1.45833333333vw] sm:min-w-[20px] min-w-[18px] lg:size-[1.45833333333vw] sm:size-[20px] size-[18px] checkBox_Wrapper">
