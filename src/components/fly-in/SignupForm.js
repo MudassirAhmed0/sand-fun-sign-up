@@ -51,6 +51,12 @@ const SignupForm = () => {
   const [genderValue, setGenderValue] = useState("Gender");
   const phoneRef = useRef(null);
 
+  const [fileErrors, setFileErrors] = useState({
+    coaFile: "",
+    corFile: "",
+    certifiacteFile: ""
+  });
+
   const validateEmail = (email) => {
     // Regular expression for validating an email address
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -59,8 +65,60 @@ const SignupForm = () => {
     return emailRegex.test(email);
   };
 
+  const handleFileValidation = (file, id) => {
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 5 MB in bytes
+    const ALLOWED_FILE_TYPES = [
+      "image/jpeg", // .jpg and .jpeg
+      "image/png", // .png
+      "application/pdf", // .pdf
+      "application/msword", // .doc
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // .docx
+    ];
+    if (file.size > MAX_FILE_SIZE) {
+      setFileErrors((prev) => {
+        return {
+          ...prev,
+          [id]: "File is too large. It should be less than 10MB."
+        };
+      });
+      return false;
+    } else if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      setFileErrors((prev) => {
+        return { ...prev, [id]: "The file type is not supported." };
+      });
+      return false;
+    } else {
+      setFileErrors((prev) => {
+        return { ...prev, [id]: "" };
+      });
+      return true;
+    }
+  };
+
   const handleFileChange = (event) => {
-    setStates({ ...states, [event.target.id]: event.target.files[0] });
+    const file = event.target.files[0];
+    if (file && handleFileValidation(file, event.target.id)) {
+      setStates({ ...states, [event.target.id]: event.target.files[0] });
+    } else {
+      setStates({ ...states, [event.target.id]: null });
+    }
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    if (file && handleFileValidation(file, event.target.dataset.id)) {
+      setStates({
+        ...states,
+        [event.target.dataset.id]: file
+      });
+    } else {
+      setStates({ ...states, [event.target.dataset.id]: null });
+    }
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
   };
 
   const resetForm = () => {
@@ -406,6 +464,9 @@ const SignupForm = () => {
                   errors={errors}
                   value={states?.coaFile}
                   handleFileChange={handleFileChange}
+                  fileErrors={fileErrors}
+                  handleDragOver={handleDragOver}
+                  handleDrop={handleDrop}
                 />
                 <UploadField
                   label={"CoR"}
@@ -413,6 +474,9 @@ const SignupForm = () => {
                   errors={errors}
                   value={states?.corFile}
                   handleFileChange={handleFileChange}
+                  fileErrors={fileErrors}
+                  handleDragOver={handleDragOver}
+                  handleDrop={handleDrop}
                 />
                 <UploadField
                   label={"Insurance certificate"}
@@ -420,6 +484,9 @@ const SignupForm = () => {
                   errors={errors}
                   value={states?.certifiacteFile}
                   handleFileChange={handleFileChange}
+                  fileErrors={fileErrors}
+                  handleDragOver={handleDragOver}
+                  handleDrop={handleDrop}
                 />
               </div>
             </div>
